@@ -1,0 +1,9 @@
+.anchor {
+    -fx-background-image: url("../Assets/table_background.jpg");
+    -fx-background-size: 100% 100%;
+}
+
+.deck {
+	-fx-background-image: url("../Assets/face_down.png");
+	-fx-background-size: 100% 100%;
+}

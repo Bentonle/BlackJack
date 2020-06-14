@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="481.0" prefWidth="796.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="blackjack.ViewController">
+   <children>
+      <Label layoutX="232.0" layoutY="14.0" style="-fx-border-radius: 20; -fx-padding: 5; -fx-border-color: red; -fx-border-width: 2;" text="BlackJack" textFill="WHITE">
+         <font>
+            <Font name="Times New Roman Bold Italic" size="74.0" />
+         </font>
+      </Label>
+      <Label layoutX="581.0" layoutY="14.0" text="By: Benton Le" textFill="WHITE">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Button fx:id="btnPlay" layoutX="290.0" layoutY="202.0" mnemonicParsing="false" onAction="#playGame" prefHeight="57.0" prefWidth="216.0" text="Play">
+         <font>
+            <Font name="Times New Roman Bold" size="35.0" />
+         </font>
+      </Button>
+      <Button layoutX="290.0" layoutY="282.0" mnemonicParsing="false" onAction="#exitGame" prefHeight="57.0" prefWidth="216.0" text="Exit">
+         <font>
+            <Font name="Times New Roman Bold" size="35.0" />
+         </font>
+      </Button>
+   </children>
+</AnchorPane>
