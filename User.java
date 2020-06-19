@@ -12,16 +12,22 @@ import javafx.scene.image.ImageView;
 
 public class User {
 
-	private int total;
-	private List<Integer> userNumbers;
-	private int cardRevealCount;
+	private List<Integer> userNumbers; // List of card numbers the user has in hand.
+	private int cardRevealCount; // Counts the # of cards the player has drawn.
 	
-	public ImageView[] imgCards = new ImageView[5];
+	private int money;
+	private int total; // Holds the cards in hand total.
+	private int wager;
+	
+	// private ImageView[] imgCards; // Store Reference of FXML image element.
 	
 	User(){
 		total = 0;
 		userNumbers = new ArrayList<Integer>();
 		cardRevealCount = 0;
+		money = 100;
+		wager = 0;
+		// imgCards = new ImageView[5];
 	}
 	
 	
@@ -30,6 +36,12 @@ public class User {
 		userNumbers.add(number); 
 		cardRevealCount++;
 	}
+	
+	/*public void setImages(ImageView tempImage) {
+		
+	}*/
+	private int cardNumberAdjust(int number) { return (number % 13); }
+	
 	public int getRevealCount() { return this.cardRevealCount; }
 	public List<Integer> getUserNumbers() { return this.userNumbers; }
 	
@@ -46,8 +58,13 @@ public class User {
 			this.total += numberAdjust;
 		}
 	}
-	public int getCardTotal() { return this.total; }
-	private int cardNumberAdjust(int number) { return (number % 13); }
+	public int getWager() { return this.wager; }
+	public void setWager(int wager) { this.wager = wager; } 
 	
-	public String printList() { return Arrays.toString(userNumbers.toArray()); }
+	public int getCardTotal() { return this.total; }
+	
+	public int getMoneyCount() { return this.money; }
+	public void changeAmountMoney(final int money) { this.money = money; }
+	
+	// public String printList() { return Arrays.toString(userNumbers.toArray()); }
 }

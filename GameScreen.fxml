@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="631.0" prefWidth="1065.0" styleClass="anchor" stylesheets="@application.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="blackjack.GameBrain">
+<AnchorPane prefHeight="631.0" prefWidth="1065.0" style="-fx-background-image: url('Assets/table_background.jpg'); -fx-background-size: 100% 100%;" styleClass="anchor" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="blackjack.GameBrain">
    <children>
       <Pane layoutX="14.0" layoutY="14.0" prefHeight="603.0" prefWidth="226.0" style="-fx-background-color: #4F341B; -fx-border-color: black; -fx-border-width: 5;">
          <children>
@@ -26,6 +26,16 @@
                   <Font size="14.0" />
                </font>
             </Label>
+            <Label fx:id="lblTotalMoney" alignment="CENTER" layoutX="14.0" layoutY="77.0" prefHeight="25.0" prefWidth="197.0" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <TextField fx:id="txtWager" layoutX="14.0" layoutY="110.0" onKeyPressed="#numTextFieldListener" prefHeight="25.0" prefWidth="197.0" promptText="Wager Amount">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </TextField>
          </children>
       </Pane>
       <Pane layoutX="263.0" layoutY="14.0" prefHeight="603.0" prefWidth="792.0">
@@ -35,55 +45,55 @@
                   <Font name="Script MT Bold" size="25.0" />
                </font>
             </Label>
-            <Button fx:id="btnDeck" layoutX="14.0" layoutY="214.0" mnemonicParsing="false" onAction="#onDeckClick" prefHeight="150.0" prefWidth="107.0" styleClass="deck" stylesheets="@application.css" />
+            <Button fx:id="btnDeck" layoutX="14.0" layoutY="214.0" mnemonicParsing="false" onAction="#onDeckClick" prefHeight="150.0" prefWidth="107.0" style="-fx-background-image: url('Assets/face_down.png'); -fx-background-size: 100% 100%;" />
             <ImageView id="Dealer_Card1" fx:id="dealer_card1" fitHeight="150.0" fitWidth="314.0" layoutX="175.0" layoutY="56.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../Assets/face_down.png" />
+                  <Image url="@/Assets/face_down.png" />
                </image>
             </ImageView>
             <ImageView id="Dealer_Card2" fx:id="dealer_card2" fitHeight="150.0" fitWidth="314.0" layoutX="289.0" layoutY="56.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../Assets/face_down.png" />
+                  <Image url="@/Assets/face_down.png" />
                </image>
             </ImageView>
             <ImageView fx:id="dealer_card3" fitHeight="150.0" fitWidth="314.0" layoutX="402.0" layoutY="56.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../Assets/face_down.png" />
+                  <Image url="@/Assets/face_down.png" />
                </image>
             </ImageView>
             <ImageView fx:id="dealer_card4" fitHeight="150.0" fitWidth="314.0" layoutX="518.0" layoutY="56.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../Assets/face_down.png" />
+                  <Image url="@/Assets/face_down.png" />
                </image>
             </ImageView>
             <ImageView fx:id="dealer_card5" fitHeight="150.0" fitWidth="314.0" layoutX="632.0" layoutY="56.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../Assets/face_down.png" />
+                  <Image url="@/Assets/face_down.png" />
                </image>
             </ImageView>
             <ImageView fx:id="player_card5" fitHeight="150.0" fitWidth="314.0" layoutX="631.0" layoutY="364.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../Assets/face_down.png" />
+                  <Image url="@/Assets/face_down.png" />
                </image>
             </ImageView>
             <ImageView fx:id="player_card4" fitHeight="150.0" fitWidth="314.0" layoutX="517.0" layoutY="364.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../Assets/face_down.png" />
+                  <Image url="@/Assets/face_down.png" />
                </image>
             </ImageView>
             <ImageView fx:id="player_card3" fitHeight="150.0" fitWidth="314.0" layoutX="402.0" layoutY="364.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../Assets/face_down.png" />
+                  <Image url="@/Assets/face_down.png" />
                </image>
             </ImageView>
             <ImageView fx:id="player_card2" fitHeight="150.0" fitWidth="314.0" layoutX="288.0" layoutY="364.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../Assets/face_down.png" />
+                  <Image url="@/Assets/face_down.png" />
                </image>
             </ImageView>
             <ImageView fx:id="player_card1" fitHeight="150.0" fitWidth="314.0" layoutX="174.0" layoutY="364.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../Assets/face_down.png" />
+                  <Image url="@/Assets/face_down.png" />
                </image>
             </ImageView>
             <Label fx:id="lblUserTotal" layoutX="174.0" layoutY="322.0" prefHeight="32.0" prefWidth="107.0" text="User:">
@@ -101,6 +111,11 @@
                   <Font name="System Bold" size="18.0" />
                </font>
             </Button>
+            <Label fx:id="lblPot" alignment="CENTER" layoutX="15.0" layoutY="14.0" prefHeight="39.0" prefWidth="107.0" style="-fx-background-color: white;" text="Pot">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
          </children>
       </Pane>
    </children>

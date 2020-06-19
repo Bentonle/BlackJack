@@ -8,10 +8,14 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -22,21 +26,19 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 
 /**
  * 
- * @author Benton
- * Task List:
- * - Add money and wagering.
- *   - Money Variable
- *   - Win wager
- *   - What happens when you lose all your money.
+ * @author Benton Le
+ * Date Completed: 06/19/2020
  */
 public class GameBrain implements Initializable {
 
 	
 	@FXML protected Button btnPlay;
 	@FXML private Button btnDeck;
+	@FXML private Button btnStand;
 
 	@FXML private ImageView dealer_card1;
 	@FXML private ImageView dealer_card2;
@@ -52,7 +54,11 @@ public class GameBrain implements Initializable {
 	
 	@FXML private Label lblUserTotal;
 	@FXML private Label lblDealerTotal;
-	 
+	@FXML private Label lblTotalMoney;
+	@FXML private Label lblPot;
+	
+	@FXML private TextField txtWager;
+	
 	// Keeps a array of cards which have been used.
 	private List<Integer> chosenNumbers;
 	private User user;
@@ -65,45 +71,63 @@ public class GameBrain implements Initializable {
 		user = new User();
 		dealer = new User();
 		
-		btnDeck.setDisable(true);
+		lblTotalMoney.setText("$" + user.getMoneyCount());
+		
+		resetMenu();
 	}
-
+	
 	/**
 	 * This function starts the game by dealing 2 cards to users and 1 to dealer.
 	 */
 	public void startGame() {
 
-		btnDeck.setDisable(false); btnPlay.setDisable(true);
-		
-		// Game starts by having user and dealer flip 2 cards.
-		for(int i = 0; i < 2; i++) {
-			int usercards = getRandomNumber();
+		if(checkWagerAmount()) {
+
+			txtWager.setDisable(true);
+			btnDeck.setDisable(false); btnPlay.setDisable(true);
+			btnStand.setDisable(false);
 			
-			try {
-				if(i == 1)
-					player_card2.setImage(new Image(getClass().getResourceAsStream("../Assets/card" + Integer.toString(usercards) + ".png")));
-				else {
-					int dealercards = getRandomNumber();
+			user.setWager(Integer.valueOf(txtWager.getText()));
+			
+			user.changeAmountMoney(user.getMoneyCount() - user.getWager());
+			
+			lblTotalMoney.setText("$" + user.getMoneyCount());
+			lblPot.setText("$" + (user.getWager() * 2));
+			
+			
+			// Game starts by having user and dealer flip 2 cards.
+			for(int i = 0; i < 2; i++) {
+				int usercards = getRandomNumber();
+				
+				try {
+					if(i == 1)
+						player_card2.setImage(new Image(getClass().getResourceAsStream("../Assets/card" + Integer.toString(usercards) + ".png")));
+					else {
+						int dealercards = getRandomNumber();
+						
+						player_card1.setImage(new Image(getClass().getResourceAsStream("../Assets/card" + Integer.toString(usercards) + ".png")));
+						dealer_card1.setImage(new Image(getClass().getResourceAsStream("../Assets/card" + Integer.toString(dealercards) + ".png")));
 					
-					player_card1.setImage(new Image(getClass().getResourceAsStream("../Assets/card" + Integer.toString(usercards) + ".png")));
-					dealer_card1.setImage(new Image(getClass().getResourceAsStream("../Assets/card" + Integer.toString(dealercards) + ".png")));
-				
-					dealer.addRandomCard(dealercards);
-				
+						dealer.addRandomCard(dealercards);
+					
+					}
+					user.addRandomCard(usercards);
+					
+					user.generateTotal();
+					dealer.generateTotal();
+					displayNewTotals();
+					
+				} catch (Exception e) {
+					print("Error: " + e);
 				}
-				user.addRandomCard(usercards);
 				
-				user.generateTotal();
-				dealer.generateTotal();
-				displayNewTotals();
-				
-			} catch (Exception e) {
-				print("Error: " + e);
 			}
-			
+			if(user.getCardTotal() > 21) {
+				userAlertDialog(0, true);
+			}
 		}
-		if(user.getCardTotal() > 21) {
-			userAlertDialog(0, true);
+		else {
+			userAlertDialog(3, false);
 		}
 	}
 	
@@ -164,7 +188,7 @@ public class GameBrain implements Initializable {
 				else
 					return false;
 	}
-	
+
 	public void onDeckClick() {
 		
 		if(user.getRevealCount() < 5) {
@@ -211,6 +235,43 @@ public class GameBrain implements Initializable {
 		
 	}
 	
+	public void numTextFieldListener() {
+		txtWager.textProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				if(!(txtWager.getText() == null)) {
+					if(!newValue.matches("\\d*")) {
+						Platform.runLater(() -> {
+							txtWager.setText(newValue.replaceAll("[^\\d]", ""));
+						});
+					}
+				}
+			}
+		});
+	}
+	
+	/**
+	 * This function will be constantly executed, to check the amount entered is valid.
+	 */
+	public boolean checkWagerAmount() {
+			
+		print(txtWager.getText());
+		if(!(txtWager.getText().isEmpty())) {
+			
+			final int amountEntered = Integer.valueOf(txtWager.getText());
+			
+			// Removes '0' if user inputs that before numbers.
+			txtWager.setText(Integer.toString(amountEntered));
+			
+			if(amountEntered > user.getMoneyCount() || amountEntered < 1)
+				return false;
+			else
+				return true;
+		}
+		else
+			return false;
+	}
+	
 	public final void userAlertDialog(final int dialog, final boolean bust) {
 		
 		Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -226,18 +287,51 @@ public class GameBrain implements Initializable {
 			alert.getButtonTypes().setAll(btnAgain, btnQuit);
 		}
 		else {
-			// dialog 1 is for win, dialog 2 is for loss
-			if(dialog == 1) {
-				alert.setContentText("You Win!!!");
-				alert.getButtonTypes().setAll(btnAgain, btnQuit);
-			}
-			else if(dialog == 2) {
-				alert.setContentText("TIE!!!!");
-				alert.getButtonTypes().setAll(btnAgain, btnQuit);
-			}
-			else {
-				alert.setContentText("You Lost :(");
-				alert.getButtonTypes().setAll(btnAgain, btnQuit);
+			
+			switch(dialog) {
+				// Case 1: If user wins.
+				case 1:{
+					
+					int winnings = user.getWager() * 2;
+					user.changeAmountMoney(winnings + user.getMoneyCount());
+					lblTotalMoney.setText("$" + user.getMoneyCount());
+					
+					alert.setContentText("You Win!!!");
+					alert.getButtonTypes().setAll(btnAgain, btnQuit);
+					break;
+				}
+				// Case 2: If dealer and user tie.
+				case 2: {
+					
+					user.changeAmountMoney(user.getWager() + user.getMoneyCount());
+					lblTotalMoney.setText("$" + user.getMoneyCount());
+					
+					alert.setContentText("TIE!!!!");
+					alert.getButtonTypes().setAll(btnAgain, btnQuit);
+					break;
+				}
+				// Case 3: If wager is not valid.
+				case 3: {
+					ButtonType btnOk = new ButtonType("OK", ButtonBar.ButtonData.RIGHT);
+					
+					alert.setContentText("Please enter valid amount");
+					alert.getButtonTypes().setAll(btnOk);
+					break;
+				}
+				case 4: {
+		
+					ButtonType btnDone = new ButtonType("Done", ButtonBar.ButtonData.NO);
+					alert.setContentText("Looks like your out of money, better luck next time!");
+					alert.getButtonTypes().setAll(btnDone);
+					
+					break;
+				}
+				// Default: If user loses.
+				default: {
+					alert.setContentText("You Lost :(");
+					alert.getButtonTypes().setAll(btnAgain, btnQuit);
+					break;
+				}
 			}
 		}
 		
@@ -245,11 +339,25 @@ public class GameBrain implements Initializable {
 
 			if(type.getButtonData() == ButtonBar.ButtonData.YES)
 				restart();
+			else if(type.getButtonData() == ButtonBar.ButtonData.RIGHT)
+				txtWager.setText("");
 			else 
 				System.exit(0);
 		});
 	}
-
+	
+	/** cardNumberAdjust(int number)
+	 * This function returns numbers from 0 - 12.
+	 * 0, being King
+	 * 12, being Queen
+	 * @param number = cards from 1 - 52
+	 * @return number = cards from 0 - 12 according to playing card standards.
+	 */
+	
+	private void displayNewTotals() {
+		lblUserTotal.setText(Integer.toString(user.getCardTotal()));
+		lblDealerTotal.setText(Integer.toString(dealer.getCardTotal()));
+	}
 	private int getRandomNumber() {
 		
 		int randomNumber = 0;
@@ -269,24 +377,37 @@ public class GameBrain implements Initializable {
 		
 		chosenNumbers.add(randomNumber);
 		return randomNumber;
-	}	
-	
-	private void displayNewTotals() {
-		lblUserTotal.setText(Integer.toString(user.getCardTotal()));
-		lblDealerTotal.setText(Integer.toString(dealer.getCardTotal()));
 	}
+	
 
 	public void restart() {
-		user = new User();
-		dealer = new User();
-		chosenNumbers = new ArrayList<Integer>();
-		
-		btnPlay.setDisable(false);
-		btnDeck.setDisable(true);
-		
+		int temp = user.getMoneyCount();
+		if(temp != 0) {
+			user = new User();
+			user.changeAmountMoney(temp);
+			
+			dealer = new User();
+			chosenNumbers = new ArrayList<Integer>();
+			
+			resetMenu();
+			resetImages();
+			
+			lblDealerTotal.setText("Dealer: ");
+			lblUserTotal.setText("User: ");
+		}
+		else
+			userAlertDialog(4, false);
+	}
+	
+	public void resetMenu() {
+		txtWager.setDisable(false); txtWager.setText("");
+		btnPlay.setDisable(false); btnDeck.setDisable(true);
+		btnStand.setDisable(true); lblPot.setText("Pot");
+	}
+	
+	public void resetImages() {
 		Image img = new Image(getClass().getResourceAsStream("../Assets/face_down.png"));
 		
-
 		player_card1.setImage(img); player_card2.setImage(img);
 		player_card3.setImage(img); player_card4.setImage(img);
 		player_card5.setImage(img);
@@ -295,10 +416,8 @@ public class GameBrain implements Initializable {
 		dealer_card3.setImage(img); dealer_card4.setImage(img);
 		dealer_card5.setImage(img);
 		
-		lblDealerTotal.setText("Dealer: ");
-		lblUserTotal.setText("User: ");
-		
 	}
+	
 	public void exit() { System.exit(0); }
 	private void print(String message) { System.out.println(message); }
 }
